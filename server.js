@@ -29,11 +29,16 @@ app.get("/notes", function(req, res){
 app.get("/api/notes", function(req, res){
     res.sendFile(path.join(__dirname, "public", "notes.html"));
     // Retrieve all notes and the res.json them back to the front end
+    res.json(notesArr)
 });
 
 app.post("/api/notes", function(req, res){
     // creates a note from req.body
-  
+    const newNote = req.body;
+    console.log(newNote + " FROM POST IN SERVER");
+    notesArr.push(newNote);
+    res.json(newNote)
+    
 });
 
 app.delete("api/notes/:id", function(req, res){
@@ -41,6 +46,9 @@ app.delete("api/notes/:id", function(req, res){
     const { id } = req.params;
 
 });
+
+
+const notesArr = [];
 
 
 app.listen(PORT, () => console.log("App listening on port " + PORT));
