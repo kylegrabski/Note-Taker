@@ -50,5 +50,8 @@ app.delete("api/notes/:id", function(req, res){
 
 const notesArr = [];
 
+app.get("*", function(req, res){
+    req.sendFile(path.join(__dirname, "public", "index.html"));
+});
 
 app.listen(PORT, () => console.log("App listening on port " + PORT));
