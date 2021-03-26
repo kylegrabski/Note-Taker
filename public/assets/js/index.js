@@ -69,7 +69,6 @@ const handleNoteSave = () => {
     title: noteTitle.value,
     text: noteText.value,
   };
-  console.log("NOTE SAVE BTN")
   saveNote(newNote).then(() => {
     getAndRenderNotes();
     renderActiveNote();
@@ -80,15 +79,15 @@ const handleNoteSave = () => {
 const handleNoteDelete = (e) => {
   // prevents the click listener for the list from being called when the button inside of it is clicked
   e.stopPropagation();
-  
   const note = e.target;
   const noteId = JSON.parse(note.parentElement.getAttribute('data-note')).id;
-
+  
   if (activeNote.id === noteId) {
     activeNote = {};
   }
-
+  
   deleteNote(noteId).then(() => {
+    console.log("DELETE CLICKED")
     getAndRenderNotes();
     renderActiveNote();
   });
