@@ -1,6 +1,9 @@
 const express = require("express");
 const path = require("path")
 const app = express();
+const fs = require("fs");
+const data = require("./db/db.json")
+
 
 const PORT = process.env.PORT || 8080;
 
@@ -21,29 +24,72 @@ app.use(express.static("public"));
 
 // HTML ROUTES
 app.get("/notes", function(req, res){
-    res.sendFile(path.join(__dirname, "public", "notes.html"));
+    res.sendFile(path.join(__dirname, "./public/notes.html"))
     // Retrieve all notes and the res.json them back to the front end
 });
 
 // API ROUTES
 app.get("/api/notes", function(req, res){
-    res.sendFile(path.join(__dirname, "public", "notes.html"));
+    fs.readFile("./db/db.json", "utf-8", (err, data) => {
+        try {
+            let db = JSON.parse(data);
+            res.send(db)
+        } catch {
+            let array = [];
+            let obj = JSON.parse(`{${data}}`)
+            array.push(obj);
+            res.send(array)
+        }
+    })
+ 
     // Retrieve all notes and the res.json them back to the front end
-    res.json(notesArr)
+    
 });
 
 app.post("/api/notes", function(req, res){
     // creates a note from req.body
-    const newNote = req.body;
-    console.log(newNote + " FROM POST IN SERVER");
-    notesArr.push(newNote);
-    res.json(newNote)
-    
+    const {body} = req;
+    if(body === undefined) {
+        res.send("NO NOTE")
+        return
+    }
+    console.log(body + " FROM POST IN SERVER");
+    fs.readFile("./db/db.json", "utf-8", (err, data) => {
+        let db = JSON.parse(data);
+        body.id = db.length;
+        db.push(body)
+        console.log(db + "db console")
+        fs.writeFile("./db/db.json", JSON.stringify(db), (err) => {
+           
+            if(!err){
+                res.send("ok")
+            }else {
+                console.log("Error at writeFile: ", err)
+                throw err
+            }
+        })
+    })   
 });
 
 app.delete("api/notes/:id", function(req, res){
     // Delete a note based off id
     const { id } = req.params;
+    fs.readFile("./db/db.json", "utf-8", (err, data) => {
+        let db = JSON.parse(data);
+        db.splice(id, 1)
+        let reIndexdb = db.map((currentElement, index) =>{
+            currentElement = {...currentElement, id:index};
+            return currentElement
+          })  ;
+        fs.writeFile("./db/db.json", JSON.stringify(reIndexdb), (err) => {
+            if(!err) {
+                res.send("ok")
+            }else{
+                throw err("ERROR ON SERVER DELETE")
+            }
+        }
+        )
+    })
 
 });
 
