@@ -15,9 +15,6 @@ app.use(express.json());
 // will have access to our css pages
 app.use(express.static("public"));
 
-// app.get("/", function(req, res){
-//     req.sendFile(path.join(__dirname, "public", "index.html"));
-// });
 
 // HTML ROUTES
 app.get("/notes", function (req, res) {
